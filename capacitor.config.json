@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "NozenoRPG App Min",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}

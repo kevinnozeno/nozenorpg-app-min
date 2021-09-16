@@ -1,0 +1,7 @@
+{
+  "name": "NozenoRPG App Min",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
