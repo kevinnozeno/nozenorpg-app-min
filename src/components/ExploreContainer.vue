@@ -12,6 +12,9 @@
     </p>
     <ion-button color="primary" @click="attack">Attack</ion-button>
     <ion-text color="primary">
+      <p>Send to : {{ url }}</p>
+    </ion-text>
+    <ion-text color="primary">
       <p>{{ pv }}</p>
     </ion-text>
   </div>
@@ -28,12 +31,15 @@ export default {
   },
   data() {
     return {
+      url: process.env.VUE_APP_URL,
       pv: 1000,
     };
   },
   methods: {
     async attack() {
-      await axios.get("http://localhost:8000/api/attack");
+      console.log(process.env.VUE_APP_TITLE)
+      console.log(process.env.VUE_APP_URL)
+      await axios.get(process.env.VUE_APP_URL+ "/api/attack");
     },
   },
   mounted() {
