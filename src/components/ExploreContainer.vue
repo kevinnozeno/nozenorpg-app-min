@@ -1,18 +1,58 @@
 <template>
   <div id="container">
     <strong>{{ name }}</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <p>
+      Explore
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://ionicframework.com/docs/components"
+        >UI Components</a
+      >
+    </p>
+    <ion-button color="primary" @click="attack">Attack</ion-button>
+    <ion-text color="primary">
+      <p>{{ pv }}</p>
+    </ion-text>
   </div>
 </template>
 
-<script lang="ts">
+<script>
+import axios from "axios";
+import Pusher from "pusher-js";
 
 export default {
-  name: 'ExploreContainer',
+  name: "ExploreContainer",
   props: {
-    name: String
+    name: String,
+  },
+  data() {
+    return {
+      pv: 1000,
+    };
+  },
+  methods: {
+    async attack() {
+      await axios.get("http://localhost:8000/api/attack");
+    },
+  },
+  mounted() {
+    Pusher.logToConsole = true;
+
+    const pusher = new Pusher('9661c0bc705ce761260b', {
+      cluster: 'eu'
+    });
+
+    const channel = pusher.subscribe('channel');
+    const that = this
+    channel.bind('event', function(data) {
+      console.log(data)
+      console.log('passed')
+      console.log(that.pv)
+      that.pv -= data.damage;
+    });
   }
-}
+};
 </script>
 
 <style scoped>
