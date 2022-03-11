@@ -11,8 +11,8 @@
           <ion-title size="large">Tab 1</ion-title>
         </ion-toolbar>
       </ion-header>
-
       <ExploreContainer name="Tab 1 page" />
+      {{ hasToken === true ? 'token récupéré' : 'token pas récupéré' }}
     </ion-content>
   </ion-page>
 </template>
@@ -26,6 +26,8 @@ import {
   IonContent,
 } from "@ionic/vue";
 import ExploreContainer from "@/components/ExploreContainer.vue";
+import { ref, onMounted } from "vue";
+import axios from 'axios';
 
 export default {
   name: "Tab1",
@@ -36,6 +38,27 @@ export default {
     IonTitle,
     IonContent,
     IonPage,
+  },
+  setup() {
+    const hasToken = ref(false)
+    const fetch = async () => {
+      return await axios
+        .post('http://127.0.0.1:8000/api/login', {
+          username: "airdox2",
+          password: "kevincanico"
+        })
+        .then((response) => {
+          localStorage.token = response.data
+          hasToken.value = !!localStorage.token
+        })
+    }
+    onMounted(() => {
+      fetch()
+    })
+    return  {
+      hasToken,
+      fetch
+    }
   },
 };
 </script>
