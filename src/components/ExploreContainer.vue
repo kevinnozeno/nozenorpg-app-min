@@ -33,28 +33,24 @@ export default {
     return {
       url: process.env.VUE_APP_URL,
       pv: 1000,
+      pusherKey: process.env.VUE_APP_PUSHER_KEY
     };
   },
   methods: {
     async attack() {
-      console.log(process.env.VUE_APP_TITLE)
-      console.log(process.env.VUE_APP_URL)
       await axios.get(process.env.VUE_APP_URL+ "/api/attack");
     },
   },
   mounted() {
     Pusher.logToConsole = true;
 
-    const pusher = new Pusher('9661c0bc705ce761260b', {
+    const pusher = new Pusher(this.pusherKey, {
       cluster: 'eu'
     });
 
     const channel = pusher.subscribe('channel');
     const that = this
     channel.bind('event', function(data) {
-      console.log(data)
-      console.log('passed')
-      console.log(that.pv)
       that.pv -= data.damage;
     });
   }

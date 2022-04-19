@@ -11,13 +11,14 @@
           <ion-title size="large">Tab 1</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ExploreContainer name="Tab 1 page" />
-      {{ hasToken === true ? 'token récupéré' : 'token pas récupéré' }}
+      <ExploreContainer v-if="token" name="Tab 1 page"/>
+      <CustomForm v-else @logged="setToken"/>
     </ion-content>
   </ion-page>
 </template>
 
 <script>
+import { ref } from "vue";
 import {
   IonPage,
   IonHeader,
@@ -26,8 +27,7 @@ import {
   IonContent,
 } from "@ionic/vue";
 import ExploreContainer from "@/components/ExploreContainer.vue";
-import { ref, onMounted } from "vue";
-import axios from 'axios';
+import CustomForm from "@/views/CustomForm";
 
 export default {
   name: "Tab1",
@@ -38,26 +38,18 @@ export default {
     IonTitle,
     IonContent,
     IonPage,
+    CustomForm
   },
   setup() {
-    const hasToken = ref(false)
-    const fetch = async () => {
-      return await axios
-        .post('http://127.0.0.1:8000/api/login', {
-          username: "airdox2",
-          password: "kevincanico"
-        })
-        .then((response) => {
-          localStorage.token = response.data
-          hasToken.value = !!localStorage.token
-        })
+    const token = ref(localStorage.getItem('token'))
+    const setToken = (newToken) => {
+      console.log(newToken)
+      console.log(localStorage.getItem('token'))
+      token.value = localStorage.getItem('token')
     }
-    onMounted(() => {
-      fetch()
-    })
     return  {
-      hasToken,
-      fetch
+      token,
+      setToken
     }
   },
 };
