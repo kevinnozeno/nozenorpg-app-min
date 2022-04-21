@@ -11,8 +11,9 @@
           <ion-title size="large">Tab 1</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ExploreContainer v-if="token" name="Tab 1 page"/>
-      <CustomForm v-else @logged="setToken"/>
+      <ExploreContainer v-if="user && character" name="Tab 1 page"/>
+      <ChoiceCharacter v-else-if="user && !character" @select="setCharacter"/>
+      <CustomForm v-else @logged="setUser"/>
     </ion-content>
   </ion-page>
 </template>
@@ -28,10 +29,12 @@ import {
 } from "@ionic/vue";
 import ExploreContainer from "@/components/ExploreContainer.vue";
 import CustomForm from "@/views/CustomForm";
+import ChoiceCharacter from "@/views/ChoiceCharacter";
 
 export default {
   name: "Tab1",
   components: {
+    ChoiceCharacter,
     ExploreContainer,
     IonHeader,
     IonToolbar,
@@ -41,15 +44,23 @@ export default {
     CustomForm
   },
   setup() {
-    const token = ref(localStorage.getItem('token'))
-    const setToken = (newToken) => {
-      console.log(newToken)
-      console.log(localStorage.getItem('token'))
-      token.value = localStorage.getItem('token')
+    const user = ref(localStorage.getItem('user'))
+    const character = ref(localStorage.getItem('character'))
+    const setUser = (newUser) => {
+      console.log(newUser)
+      console.log(JSON.parse(localStorage.getItem('user')))
+      user.value = JSON.parse(localStorage.getItem('user'))
+    }
+    const setCharacter = (newCharacter) => {
+      console.log(newCharacter)
+      console.log(JSON.parse(localStorage.getItem('character')))
+      character.value = JSON.parse(localStorage.getItem('character'))
     }
     return  {
-      token,
-      setToken
+      user,
+      character,
+      setUser,
+      setCharacter
     }
   },
 };

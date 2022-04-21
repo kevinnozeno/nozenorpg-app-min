@@ -56,8 +56,9 @@ export default {
             password: form.password.value
           })
           .then((response) => {
-            localStorage.setItem( 'token', response.data )
-            context.emit("logged", response.data)
+            console.log(response.data)
+            localStorage.setItem( 'user', JSON.stringify(response.data) )
+            context.emit("logged", JSON.stringify(response.data))
           })
     };
     return  {
