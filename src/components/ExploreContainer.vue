@@ -44,26 +44,24 @@ export default {
       url: process.env.VUE_APP_URL,
       boss: {},
       pusherKey: process.env.VUE_APP_PUSHER_KEY,
-      character: JSON.parse(localStorage.getItem('character'))
+      character: JSON.parse(localStorage.getItem('character')),
+      user: JSON.parse(localStorage.getItem('user'))
     };
   },
   methods: {
     async attack() {
-      await axios.post(process.env.VUE_APP_URL + "/api/attack", {
-        target: this.boss.id,
-        damage: this.character.ad
+      await axios.patch(process.env.VUE_APP_URL + "/api/characters/" + this.character.id + "/users/" +  this.character.user_id +"/attack", {
+        target: this.boss
       })
     },
     async cast() {
-      await axios.post(process.env.VUE_APP_URL + "/api/cast", {
-        target: this.boss.id,
-        damage: this.character.ap
+      await axios.patch(process.env.VUE_APP_URL + "/api/characters/" + this.character.id + "/users/" +  this.character.user_id + "/cast", {
+        target: this.boss
       })
     },
     async heal() {
-      await axios.post(process.env.VUE_APP_URL + "/api/heal", {
-        target: this.boss.id,
-        damage: this.character.heal
+      await axios.patch(process.env.VUE_APP_URL + "/api/characters/" + this.character.id + "/users/" +  this.character.user_id + "/heal", {
+        target: this.character
       })
     },
     async getBoss () {
@@ -82,8 +80,8 @@ export default {
 
     const channel = pusher.subscribe('channel');
     const that = this
-    channel.bind('event', function(data) {
-      that.boss = data.target;
+    channel.bind('event', function(response) {
+      that.boss = response.target;
     });
   }
 };
