@@ -80,8 +80,11 @@ export default {
 
     const channel = pusher.subscribe('channel');
     const that = this
-    channel.bind('event', function(response) {
-      that.boss = response.target;
+    channel.bind('attack', function(response) { that.boss = response.data });
+    channel.bind('cast', function(response) { that.boss = response.data });
+    channel.bind('heal', function(response) {
+      localStorage.setItem( 'character', JSON.stringify(response.data) )
+      that.character = response.data
     });
   }
 };
