@@ -6,7 +6,7 @@
       </ion-card-header>
       <ion-card-content>
         <ion-select placeholder="Choisir un personnage..." v-model="characterSelected">
-          <ion-select-option v-for="(character) in characters" :key="character.id" :value="character.id">{{ character.name }} (Level {{ character.pivot.level }})</ion-select-option>
+          <ion-select-option v-for="(character) in user.characters" :key="character.id" :value="character.id">{{ character.name }} (Level {{ character.pivot.level }})</ion-select-option>
         </ion-select>
       </ion-card-content>
     </ion-card>
@@ -32,20 +32,18 @@ export default {
   },
   setup(props, context) {
     const characterSelected = ref(0)
-    const characters = ref(JSON.parse(localStorage.getItem('user')).characters)
+    const user = ref(JSON.parse(localStorage.getItem('user')))
     const getCharacter = async () => {
-      console.log(characterSelected)
       return await axios
-          .get('http://127.0.0.1:8000/api/characters/' + characterSelected.value)
+          .get(process.env.VUE_APP_URL +'/api/characters/' + characterSelected.value + '/users/' + user.value.id)
           .then((response) => {
-            console.log(response.data)
             localStorage.setItem( 'character', JSON.stringify(response.data) )
             context.emit("select", JSON.stringify(response.data))
           })
     };
     return  {
       characterSelected,
-      characters,
+      user,
       getCharacter
     }
   }

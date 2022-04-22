@@ -51,12 +51,11 @@ export default {
     };
     const login = async () => {
       return await axios
-          .post('http://127.0.0.1:8000/api/login', {
+          .post(process.env.VUE_APP_URL+'/api/login', {
             username: form.username.value,
             password: form.password.value
           })
           .then((response) => {
-            console.log(response.data)
             localStorage.setItem( 'user', JSON.stringify(response.data) )
             context.emit("logged", JSON.stringify(response.data))
           })

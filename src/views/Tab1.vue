@@ -47,13 +47,9 @@ export default {
     const user = ref(localStorage.getItem('user'))
     const character = ref(localStorage.getItem('character'))
     const setUser = (newUser) => {
-      console.log(newUser)
-      console.log(JSON.parse(localStorage.getItem('user')))
       user.value = JSON.parse(localStorage.getItem('user'))
     }
     const setCharacter = (newCharacter) => {
-      console.log(newCharacter)
-      console.log(JSON.parse(localStorage.getItem('character')))
       character.value = JSON.parse(localStorage.getItem('character'))
     }
     return  {
