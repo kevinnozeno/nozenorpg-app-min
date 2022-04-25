@@ -1,5 +1,5 @@
 <template>
-  <section class="login-form">
+  <ion-page>
     <ion-card>
       <ion-card-header>
         <ion-card-title>Formulaire de connexion</ion-card-title>
@@ -24,17 +24,20 @@
       </ion-card-content>
     </ion-card>
     <ion-button @click="login">Se connecter</ion-button>
-  </section>
+  </ion-page>
 </template>
 
 <script>
 import { ref } from "vue";
 import axios from "axios";
-import {IonLabel, IonInput, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton} from '@ionic/vue';
+import {IonPage, IonLabel, IonInput, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton} from '@ionic/vue';
+import {store} from '@/store/store'
+import router from "@/router";
 
 export default {
-  name: "CustomForm",
+  name: "Login",
   components: {
+    IonPage,
     IonInput,
     IonCard,
     IonCardHeader,
@@ -44,7 +47,7 @@ export default {
     IonCardContent,
     IonButton
   },
-  setup(props, context) {
+  setup() {
     const form = {
       username: ref(''),
       password: ref('')
@@ -56,8 +59,8 @@ export default {
             password: form.password.value
           })
           .then((response) => {
-            localStorage.setItem( 'user', JSON.stringify(response.data) )
-            context.emit("logged", JSON.stringify(response.data))
+            store.commit('setUser', response.data)
+            router.push('/choice-character')
           })
     };
     return  {
@@ -69,7 +72,7 @@ export default {
 </script>
 
 <style scoped>
-  .login-form {
+  .ion-page {
     display: flex;
     flex-direction: column;
     justify-content: center;

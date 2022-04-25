@@ -1,31 +1,53 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import Tabs from '../views/Tabs.vue'
+import Rooms from '@/views/Rooms.vue'
+import Login from "@/views/Login.vue";
+import ChoiceCharacter from "@/views/ChoiceCharacter.vue";
+import {store} from "@/store/store";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tabs/tab1'
+    redirect: '/login'
   },
   {
-    path: '/tabs/',
-    component: Tabs,
+    path: '/login',
+    component: Login,
+    meta: {
+      hideForAuth: true,
+      transition: 'bounce'
+    }
+  },
+  {
+    path: '/choice-character',
+    component: ChoiceCharacter,
+    meta: {
+      hideForAuth: true,
+      transition: 'bounce'
+    }
+  },
+  {
+    path: '/rooms',
+    component: Rooms,
+    meta: {
+      requiresAuth: true
+    },
     children: [
       {
         path: '',
-        redirect: '/tabs/tab1'
+        redirect: '/rooms/room1'
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/Tab1.vue')
+        path: 'room1',
+        component: () => import('@/views/Room1.vue')
       },
       {
-        path: 'tab2',
-        component: () => import('@/views/Tab2.vue')
+        path: 'room2',
+        component: () => import('@/views/Room2.vue')
       },
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3.vue')
+        path: 'room3',
+        component: () => import('@/views/Room3.vue')
       }
     ]
   }
@@ -35,5 +57,32 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!store.getters.getUser) {
+      if (!store.getters.getCharacter) {
+        router.push({path: '/login'});
+      } else {
+        router.push({path: '/choice-character'});
+      }
+    } else {
+      next();
+    }
+
+  } else {
+    next();
+  }
+
+  if (to.matched.some(record => record.meta.hideForAuth)) {
+    if (store.getters.getUser && store.getters.getCharacter) {
+      router.push({ path: '/rooms' });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
 
 export default router

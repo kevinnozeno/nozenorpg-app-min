@@ -1,5 +1,5 @@
 <template>
-  <section class="container">
+  <ion-page>
     <div class="ennemies-part">
       <strong>{{ boss.name }}</strong>
       <ion-text color="primary">
@@ -19,16 +19,19 @@
         <ion-button color="primary" @click="heal">Soigner  ({{ character.heal }})</ion-button>
       </div>
     </div>
-  </section>
+  </ion-page>
 </template>
 
 <script>
 import axios from "axios";
 import Pusher from "pusher-js";
 import {
+  IonPage,
   IonButton,
   IonText
 } from "@ionic/vue";
+import {computed} from "vue";
+import {store} from "@/store/store";
 
 export default {
   name: "ExploreContainer",
@@ -36,6 +39,7 @@ export default {
     name: String,
   },
   components: {
+    IonPage,
     IonButton,
     IonText
   },
@@ -44,8 +48,8 @@ export default {
       url: process.env.VUE_APP_URL,
       boss: {},
       pusherKey: process.env.VUE_APP_PUSHER_KEY,
-      character: JSON.parse(localStorage.getItem('character')),
-      user: JSON.parse(localStorage.getItem('user'))
+      character: computed(() => store.getters.getCharacter),
+      user: computed(() => store.getters.getUser)
     };
   },
   methods: {
@@ -91,7 +95,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.ion-page {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -100,19 +104,19 @@ export default {
   height: 100%;
 }
 
-.container strong {
+.ion-page strong {
   font-size: 20px;
   line-height: 26px;
 }
 
-.container p {
+.ion-page p {
   font-size: 16px;
   line-height: 22px;
   color: #8c8c8c;
   margin: 0;
 }
 
-.container a {
+.ion-page a {
   text-decoration: none;
 }
 </style>

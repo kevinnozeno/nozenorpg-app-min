@@ -1,5 +1,5 @@
 <template>
-  <section class="login-form">
+  <ion-page>
     <ion-card>
       <ion-card-header>
         <ion-card-title>Choix du personnage</ion-card-title>
@@ -11,17 +11,20 @@
       </ion-card-content>
     </ion-card>
     <ion-button @click="getCharacter">Jouer</ion-button>
-  </section>
+  </ion-page>
 </template>
 
 <script>
-import { ref } from "vue";
+import {computed, ref} from "vue";
 import axios from "axios";
-import {IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonSelect, IonSelectOption} from '@ionic/vue';
+import {IonPage, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonSelect, IonSelectOption} from '@ionic/vue';
+import {store} from "@/store/store";
+import router from "@/router";
 
 export default {
   name: "ChoiceCharacter",
   components: {
+    IonPage,
     IonCard,
     IonCardHeader,
     IonCardTitle,
@@ -30,15 +33,15 @@ export default {
     IonSelect,
     IonSelectOption
   },
-  setup(props, context) {
+  setup() {
     const characterSelected = ref(0)
-    const user = ref(JSON.parse(localStorage.getItem('user')))
+    const user = computed(() => store.getters.getUser)
     const getCharacter = async () => {
       return await axios
           .get(process.env.VUE_APP_URL +'/api/characters/' + characterSelected.value + '/users/' + user.value.id)
           .then((response) => {
-            localStorage.setItem( 'character', JSON.stringify(response.data) )
-            context.emit("select", JSON.stringify(response.data))
+            store.commit('setCharacter', response.data)
+            router.push('/rooms')
           })
     };
     return  {
@@ -51,11 +54,13 @@ export default {
 </script>
 
 <style scoped>
-  .login-form {
+  .ion-page {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100%;
+    width: 100%;
+    background: white;
   }
 </style>
