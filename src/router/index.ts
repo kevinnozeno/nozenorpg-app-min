@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import Rooms from '@/views/Rooms.vue'
 import Login from "@/views/Login.vue";
 import ChoiceCharacter from "@/views/ChoiceCharacter.vue";
 import {store} from "@/store/store";
@@ -27,29 +26,20 @@ const routes: Array<RouteRecordRaw> = [
     }
   },
   {
-    path: '/rooms',
-    component: Rooms,
+    path: '/rooms/',
+    component: () => import('@/views/Rooms.vue'),
+    props: true,
     meta: {
       requiresAuth: true
-    },
-    children: [
-      {
-        path: '',
-        redirect: '/rooms/room1'
-      },
-      {
-        path: 'room1',
-        component: () => import('@/views/Room1.vue')
-      },
-      {
-        path: 'room2',
-        component: () => import('@/views/Room2.vue')
-      },
-      {
-        path: 'room3',
-        component: () => import('@/views/Room3.vue')
-      }
-    ]
+    }
+  },
+  {
+    path: '/rooms/:id',
+    component: () => import('@/views/Room.vue'),
+    props: true,
+    meta: {
+      requiresAuth: true
+    }
   }
 ]
 

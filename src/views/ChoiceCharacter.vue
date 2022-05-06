@@ -38,10 +38,10 @@ export default {
     const user = computed(() => store.getters.getUser)
     const getCharacter = async () => {
       return await axios
-          .get(process.env.VUE_APP_URL +'/api/characters/' + characterSelected.value + '/users/' + user.value.id)
+          .get(process.env.VUE_APP_URL +'/api/users/' + user.value.id + '/characters/' + characterSelected.value )
           .then((response) => {
             store.commit('setCharacter', response.data)
-            router.push('/rooms')
+            router.push('/rooms/')
           })
     };
     return  {
