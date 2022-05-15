@@ -51,7 +51,7 @@ export default {
     IonButton
   },
   methods: {
-    async target(skill) {
+    async target (skill) {
       const modal = await modalController.create({
         component: skill.type === 'one' ? UseSkillOne : UseSkillMulti,
         componentProps: {
@@ -71,7 +71,7 @@ export default {
     async use (skill) {
       await axios.post(process.env.VUE_APP_URL + "/api/roomables/" + this.player.pivot.id + "/use/" + skill.slug)
       .finally(() => {
-        modalController.dismiss();
+        modalController.dismiss()
       })
     }
   },

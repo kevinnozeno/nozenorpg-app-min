@@ -85,7 +85,8 @@ import {
   IonItem,
   IonLabel,
   IonNote,
-  modalController
+  modalController,
+  alertController
 } from "@ionic/vue";
 import {
   personCircleOutline
@@ -179,13 +180,21 @@ export default {
         const pusher = new Pusher(this.pusherKey, {cluster: 'eu'});
         const channel = pusher.subscribe('room-'+ this.room.id);
         channel.bind('update', (response) => {
-          console.log(response)
           this.room = response.room
-          for (const message in response.messages) {
-            console.log(response.messages[message])
+          for (const message in response.messages.reverse()) {
+            this.alert(response.messages[message])
           }
         });
       })
+    },
+    async alert(message) {
+      const alert = await alertController
+          .create({
+            header: message.title,
+            subHeader: message.subtitle,
+            message: message.message,
+          });
+      await alert.present();
     },
     leave () {
       router.push({path:'/rooms/', replace: true})
