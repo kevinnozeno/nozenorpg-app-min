@@ -28,9 +28,9 @@
         <ion-title class="character-name" v-if="player">{{ player.name }} [{{ player.character.name }}] - Level {{ player.level }}</ion-title>
       </ion-toolbar>
       <div class="pv-infos">
-        <span class="progress-bar" :style="'width:'+ this.pourcentagePv + '%'"></span>
-        <ion-text>
-          {{ character.roomActive.pivot.statistics.actualPv }} / {{ character.character.pv }} PV
+        <span v-if="pourcentagePv" class="progress-bar" :style="'width:'+ this.pourcentagePv + '%'"></span>
+        <ion-text v-if="player">
+          {{ player.pivot.statistics.actualPv }} / {{ player.character.pv }} PV
         </ion-text>
       </div>
       <div class="resume-infos">
@@ -56,7 +56,7 @@
 <!--        </div>-->
       </div>
       <div class="actions">
-        <ion-button color="primary" expand="full" :disabled="!playing"><strong>Jouer</strong></ion-button>
+        <ion-button color="primary" expand="full" :disabled="!playing" @click="openModal()"><strong>Jouer</strong></ion-button>
         <ion-button color="warning" expand="full" @click="leave"><strong>Quitter</strong></ion-button>
       </div>
     </ion-footer>
@@ -84,7 +84,8 @@ import {
   IonText,
   IonItem,
   IonLabel,
-  IonNote
+  IonNote,
+  modalController
 } from "@ionic/vue";
 import {
   personCircleOutline
@@ -94,11 +95,12 @@ import {computed} from "vue";
 import axios from "axios";
 import Pusher from "pusher-js";
 import router from "@/router";
+import skillsModal from "@/components/Skills.vue";
 
 export default {
   name: "Room",
   props: {
-    id: Number
+    id: [Number, String]
   },
   components: {
     IonContent,
@@ -134,7 +136,7 @@ export default {
   },
   computed : {
     userCharacters () {
-      return this.room ? this.room.user_characters : this.character.roomActive
+      return this.room ? this.room.user_characters : null
     },
     player () {
       return this.userCharacters ? this.userCharacters.find((userCharacter) => userCharacter.id === this.character.id) : null
@@ -148,36 +150,41 @@ export default {
       }) : null
     },
     pourcentagePv () {
-      const actualPv = this.character.roomActive.pivot.statistics.actualPv
-      const pvMax = this.character.character.pv
-      return (actualPv*100)/pvMax
+      let pourcentagePv = 100
+      if (this.player) {
+        const actualPv = this.player.pivot.statistics.actualPv
+        const pvMax = this.player.character.pv
+        pourcentagePv = (actualPv*100)/pvMax
+      }
+      return pourcentagePv
     }
   },
   methods: {
-    async attack() {
-      await axios.patch(process.env.VUE_APP_URL + "/api/entity/1/action/1", {
-        user_id: this.character.id,
-        target_id: this.boss.id,
-        target_type: 1
-      })
-    },
-    async cast() {
-      await axios.patch(process.env.VUE_APP_URL + "/api/entity/1/action/2", {
-        user_id: this.character.id,
-        target_id: this.boss.id,
-        target_type: 1
-      })
-    },
-    async heal() {
-      await axios.patch(process.env.VUE_APP_URL + "/api/entity/1/action/3", {
-        user_id: this.character.id,
-        target_id: this.character.id,
-        target_type: 1
-      })
+    async openModal() {
+      const modal = await modalController.create({
+        component: skillsModal,
+        componentProps: {
+          skills: this.player.character.skills,
+          targets: this.otherEntities,
+          player: this.player
+        },
+        swipeToClose: true
+      });
+      return modal.present();
     },
     async getRoom () {
       await axios.get(process.env.VUE_APP_URL+ "/api/rooms/" + this.id).then((response) => {
         this.room = response.data
+
+        const pusher = new Pusher(this.pusherKey, {cluster: 'eu'});
+        const channel = pusher.subscribe('room-'+ this.room.id);
+        channel.bind('update', (response) => {
+          console.log(response)
+          this.room = response.room
+          for (const message in response.messages) {
+            console.log(response.messages[message])
+          }
+        });
       })
     },
     leave () {
@@ -186,20 +193,6 @@ export default {
   },
   mounted() {
     this.getRoom()
-    Pusher.logToConsole = true;
-
-    const pusher = new Pusher(this.pusherKey, {
-      cluster: 'eu'
-    });
-
-    const channel = pusher.subscribe('channel');
-    const that = this
-    channel.bind('attack', function(response) { that.boss = response.data });
-    channel.bind('cast', function(response) { that.boss = response.data });
-    channel.bind('heal', function(response) {
-      localStorage.setItem( 'character', JSON.stringify(response.data) )
-      that.character = response.data
-    });
   }
 };
 </script>
