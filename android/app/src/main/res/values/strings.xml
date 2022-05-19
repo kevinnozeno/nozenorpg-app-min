@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">NozenoRPG App Min</string>
     <string name="title_activity_main">NozenoRPG App Min</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="package_name">nozenorpg.app.min</string>
+    <string name="custom_url_scheme">nozenorpg.app.min</string>
 </resources>

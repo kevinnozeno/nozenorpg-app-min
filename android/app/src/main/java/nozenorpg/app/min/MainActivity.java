@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package nozenorpg.app.min;
 
 import com.getcapacitor.BridgeActivity;
 
