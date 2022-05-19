@@ -127,7 +127,6 @@ export default {
   },
   data () {
     return {
-      url: process.env.VUE_APP_URL,
       pusherKey: process.env.VUE_APP_PUSHER_KEY,
       character: computed(() => store.getters.getCharacter),
       user: computed(() => store.getters.getUser),
@@ -161,6 +160,16 @@ export default {
     }
   },
   methods: {
+    initPusher () {
+      const pusher = new Pusher(this.pusherKey, {cluster: 'eu'});
+      const channel = pusher.subscribe('room-'+ this.id);
+      channel.bind('update', (response) => {
+        this.room = response.room
+        for (const message in response.messages.reverse()) {
+          this.alert(response.messages[message])
+        }
+      });
+    },
     async openModal() {
       const modal = await modalController.create({
         component: skillsModal,
@@ -174,17 +183,8 @@ export default {
       return modal.present();
     },
     async getRoom () {
-      await axios.get(process.env.VUE_APP_URL+ "/api/rooms/" + this.id).then((response) => {
+      await axios.get("rooms/" + this.id).then((response) => {
         this.room = response.data
-
-        const pusher = new Pusher(this.pusherKey, {cluster: 'eu'});
-        const channel = pusher.subscribe('room-'+ this.room.id);
-        channel.bind('update', (response) => {
-          this.room = response.room
-          for (const message in response.messages.reverse()) {
-            this.alert(response.messages[message])
-          }
-        });
       })
     },
     async alert(message) {
@@ -202,6 +202,7 @@ export default {
   },
   mounted() {
     this.getRoom()
+    this.initPusher()
   }
 };
 </script>

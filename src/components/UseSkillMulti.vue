@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     async use () {
-      await axios.post(process.env.VUE_APP_URL + "/api/roomables/" + this.player.pivot.id + "/use/" + this.skill.slug, {
+      await axios.post("roomables/" + this.player.pivot.id + "/use/" + this.skill.slug, {
         target: this.targetSelected.pivot.id
       })
           .finally(() => {

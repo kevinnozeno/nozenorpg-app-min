@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
+import axios from 'axios';
 
 import { IonicVue } from '@ionic/vue';
 
@@ -25,6 +26,10 @@ import './theme/variables.css';
 
 // vuex
 import { store } from './store/store'
+
+axios.defaults.baseURL = process.env.VUE_APP_URL + '/api/'
+axios.defaults.headers.common['Accept'] = 'application/json'
+axios.defaults.withCredentials = true
 
 const app = createApp(App)
   .use(store)

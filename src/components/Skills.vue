@@ -69,7 +69,7 @@ export default {
       return modal.present();
     },
     async use (skill) {
-      await axios.post(process.env.VUE_APP_URL + "/api/roomables/" + this.player.pivot.id + "/use/" + skill.slug)
+      await axios.post("roomables/" + this.player.pivot.id + "/use/" + skill.slug).then((response) => console.log(response)).catch((e) => console.log(e.message))
       .finally(() => {
         modalController.dismiss()
       })

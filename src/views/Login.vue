@@ -53,15 +53,17 @@ export default {
       password: ref('')
     };
     const login = async () => {
-      return await axios
-          .post(process.env.VUE_APP_URL+'/api/login', {
-            username: form.username.value,
-            password: form.password.value
-          })
-          .then((response) => {
-            store.commit('setUser', response.data)
-            router.push('/choice-character')
-          })
+      return await axios({ method:'get', url: process.env.VUE_APP_URL + '/sanctum/csrf-cookie', baseURL: '/',}).then(async (response) => {
+        await axios
+            .post('login', {
+              username: form.username.value,
+              password: form.password.value
+            })
+            .then((response) => {
+              store.commit('setUser', response.data)
+              router.push('/choice-character')
+            })
+      })
     };
     return  {
       form,
